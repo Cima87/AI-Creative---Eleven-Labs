@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # or 'master', depending on your default branch
+    branches: [ main ] # Change to 'master' if your default branch is master
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -10,20 +10,29 @@ permissions:
   pages: write
   id-token: write
 
+# Opt into Node 24 to fix the deprecation warning
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 24
+          # (Removed the cache: 'npm' line here so it stops looking for the lock file)
+          
       - name: Install dependencies
+        # Using standard npm install which doesn't strictly require a lock file
         run: npm install
+        
       - name: Build
         run: npm run build
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
